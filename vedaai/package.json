@@ -8,9 +8,16 @@
   ],
   "scripts": {
     "dev": "concurrently -n backend,worker,frontend -c blue,magenta,green \"npm run dev -w @vedaai/backend\" \"npm run worker -w @vedaai/backend\" \"npm run dev -w @vedaai/frontend\"",
+
     "dev:backend": "npm run dev -w @vedaai/backend",
     "dev:frontend": "npm run dev -w @vedaai/frontend",
-    "build": "npm run build -w @vedaai/types && npm run build -w @vedaai/backend && npm run build -w @vedaai/frontend",
+
+    "build:types": "npm run build -w @vedaai/types",
+    "build:backend": "npm run build -w @vedaai/backend",
+    "build:frontend": "npm run build -w @vedaai/frontend",
+
+    "build": "npm run build:types && npm run build:backend",
+
     "worker": "npm run worker -w @vedaai/backend"
   },
   "devDependencies": {
