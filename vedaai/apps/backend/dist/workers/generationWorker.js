@@ -5,15 +5,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
 const bullmq_1 = require("bullmq");
-const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
+const groq_sdk_1 = __importDefault(require("groq-sdk"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const Assignment_1 = require("../models/Assignment");
 const redis_1 = require("../lib/redis");
 const socket_1 = require("../socket");
 const SYSTEM_PROMPT = `You are an expert exam paper creator. You must respond with ONLY a valid JSON object. No markdown. No explanation. No code fences. Just raw JSON.`;
-const anthropic = new sdk_1.default({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-});
+const groq = new groq_sdk_1.default({ apiKey: process.env.GROQ_API_KEY });
 function buildUserPrompt(input) {
     const easyCount = Math.round((input.totalQuestions * input.difficulty.easy) / 100);
     const mediumCount = Math.round((input.totalQuestions * input.difficulty.medium) / 100);
@@ -21,10 +19,13 @@ function buildUserPrompt(input) {
     const questionTypeLabels = input.questionTypes
         .map((t) => {
         const map = {
-            mcq: "Multiple Choice (MCQ)",
-            short_answer: "Short Answer",
-            long_answer: "Long Answer",
-            true_false: "True/False",
+            mcq: "Multiple Choice (MCQ) - use type: mcq",
+            short_answer: "Short Answer - use type: short_answer",
+            long_answer: "Long Answer - use type: long_answer",
+            true_false: "True/False - use type: true_false",
+            diagram_based: "Diagram/Graph Based - use type: diagram_based",
+            numerical: "Numerical Problems - use type: numerical",
+            fill_in_blank: "Fill in the Blanks - use type: fill_in_blank",
         };
         return map[t];
     })
@@ -38,9 +39,14 @@ function buildUserPrompt(input) {
 - Question Types: ${questionTypeLabels}
 - Easy questions: ${easyCount}
 - Medium questions: ${mediumCount}
-- Hard questions: ${hardCount}
-
-Return a JSON object with this exact structure:
+- Hard questions: ${hardCount}`;
+    if (input.questionTypeCounts && Object.keys(input.questionTypeCounts).length > 0) {
+        prompt += `\n\nIMPORTANT - Generate EXACTLY this many questions per type:`;
+        Object.entries(input.questionTypeCounts).forEach(([type, count]) => {
+            prompt += `\n- ${type}: ${count} questions`;
+        });
+    }
+    prompt += `\n\nReturn a JSON object with this exact structure:
 {
   "sections": [
     {
@@ -71,29 +77,28 @@ Return a JSON object with this exact structure:
         prompt += `\n\nAdditional Instructions:\n${input.additionalInstructions}`;
     }
     if (input.fileContent) {
-        prompt += `\n\nReference Material (from uploaded document):\n${input.fileContent.slice(0, 2000)}`;
+        prompt += `\n\nReference Material:\n${input.fileContent.slice(0, 2000)}`;
     }
     return prompt;
 }
-async function callClaude(userPrompt, correction = false) {
-    const apiKey = process.env.ANTHROPIC_API_KEY || "";
+async function callGroq(userPrompt, correction = false) {
+    const apiKey = process.env.GROQ_API_KEY || "";
     if (!apiKey || apiKey.toLowerCase().includes("your")) {
-        throw new Error("Anthropic API key is not set or is a placeholder. Set ANTHROPIC_API_KEY in apps/backend/.env");
+        throw new Error("GROQ_API_KEY is not set in .env file");
     }
     const message = correction
-        ? "The previous response was not valid JSON. Please return only the corrected valid JSON with no other text."
+        ? "The previous response was not valid JSON. Return only valid JSON with no other text."
         : userPrompt;
-    const response = await anthropic.messages.create({
-        model: "claude-sonnet-4-20250514",
+    const response = await groq.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            { role: "user", content: message }
+        ],
+        temperature: 0.7,
         max_tokens: 4000,
-        system: SYSTEM_PROMPT,
-        messages: [{ role: "user", content: message }],
     });
-    const block = response.content[0];
-    if (block.type !== "text") {
-        throw new Error("Unexpected response type from Claude API");
-    }
-    return block.text.trim();
+    return response.choices[0].message.content?.trim() ?? "";
 }
 function extractJson(text) {
     let cleaned = text.trim();
@@ -128,8 +133,11 @@ function validateAndNormalizeSections(parsed, input) {
             : [];
         const questions = questionsRaw.map((q, qIdx) => {
             const question = q;
-            const type = question.type ||
-                defaultQuestionType(input.questionTypes);
+            const rawType = String(question.type ?? "").toLowerCase().replace(/\s+/g, "_");
+            const validTypes = ["mcq", "short_answer", "long_answer", "true_false", "diagram_based", "numerical", "fill_in_blank"];
+            const type = validTypes.includes(rawType)
+                ? rawType
+                : defaultQuestionType(input.questionTypes);
             const difficulty = question.difficulty || defaultDifficulty();
             const normalized = {
                 id: String(question.id ?? `q-${sIdx + 1}-${qIdx + 1}`),
@@ -181,7 +189,7 @@ async function processJob(assignmentId) {
         progress: 20,
         message: "Analyzing your requirements",
     });
-    let responseText;
+    let responseText = "";
     let parsed;
     try {
         (0, socket_1.emitAssignmentEvent)(assignmentId, {
@@ -190,7 +198,7 @@ async function processJob(assignmentId) {
             progress: 40,
             message: "Generating questions with AI",
         });
-        responseText = await callClaude(rawPrompt);
+        responseText = await callGroq(rawPrompt);
         (0, socket_1.emitAssignmentEvent)(assignmentId, {
             type: "JOB_PROGRESS",
             assignmentId,
@@ -211,7 +219,7 @@ async function processJob(assignmentId) {
                 progress: 70,
                 message: "AI returned invalid JSON, requesting corrected JSON",
             });
-            responseText = await callClaude(rawPrompt, true);
+            responseText = await callGroq(rawPrompt, true);
             const extractedJson = extractJson(responseText);
             parsed = JSON.parse(extractedJson);
         }

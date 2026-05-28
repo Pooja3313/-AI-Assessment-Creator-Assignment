@@ -40,7 +40,7 @@ const questionOptionSchema = new mongoose_1.Schema({ id: String, text: String },
 const questionSchema = new mongoose_1.Schema({
     id: String,
     text: String,
-    type: { type: String, enum: ["mcq", "short_answer", "long_answer", "true_false"] },
+    type: { type: String, enum: ["mcq", "short_answer", "long_answer", "true_false", "diagram_based", "numerical", "fill_in_blank"] },
     difficulty: { type: String, enum: ["easy", "medium", "hard"] },
     marks: Number,
     options: { type: [questionOptionSchema], default: undefined },
@@ -53,6 +53,11 @@ const sectionSchema = new mongoose_1.Schema({
     questions: { type: [questionSchema], default: [] },
     totalMarks: Number,
 }, { _id: false });
+const questionTypeConfigSchema = new mongoose_1.Schema({
+    type: { type: String, enum: ["mcq", "short_answer", "long_answer", "true_false", "diagram_based", "numerical", "fill_in_blank"] },
+    count: Number,
+    marksEach: Number,
+}, { _id: false });
 const assignmentInputSchema = new mongoose_1.Schema({
     subject: { type: String, required: true },
     topic: { type: String, required: true },
@@ -60,6 +65,7 @@ const assignmentInputSchema = new mongoose_1.Schema({
     dueDate: { type: String, required: true },
     totalMarks: { type: Number, required: true },
     questionTypes: { type: [String], required: true },
+    questionTypeConfigs: { type: [questionTypeConfigSchema], default: undefined },
     difficulty: {
         easy: { type: Number, required: true },
         medium: { type: Number, required: true },

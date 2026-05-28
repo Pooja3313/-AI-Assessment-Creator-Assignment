@@ -10,6 +10,9 @@ const VALID_QUESTION_TYPES = [
     "short_answer",
     "long_answer",
     "true_false",
+    "diagram_based",
+    "numerical",
+    "fill_in_blank",
 ];
 function validateAssignmentInput(body) {
     const requiredFields = [
@@ -86,6 +89,20 @@ function validateAssignmentInput(body) {
     }
     return null;
 }
+// GET /api/assignments ? list all for teacher (filter by teacherId from JWT)
+router.get("/", async (req, res) => {
+    try {
+        // In production, filter by teacherId from JWT: req.user.id
+        // For now, return all assignments sorted by newest first
+        const assignments = await Assignment_1.AssignmentModel.find()
+            .sort({ createdAt: -1 });
+        return res.json({ assignments });
+    }
+    catch (error) {
+        console.error("GET /api/assignments error:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
 router.post("/", async (req, res) => {
     try {
         const validationError = validateAssignmentInput(req.body);
@@ -141,6 +158,21 @@ router.get("/:id", async (req, res) => {
     }
     catch (error) {
         console.error("GET /api/assignments/:id error:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+// DELETE /api/assignments/:id ? delete an assignment
+router.delete("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const assignment = await Assignment_1.AssignmentModel.findByIdAndDelete(id);
+        if (!assignment) {
+            return res.status(404).json({ error: "Assignment not found" });
+        }
+        return res.json({ success: true });
+    }
+    catch (error) {
+        console.error("DELETE /api/assignments/:id error:", error);
         return res.status(500).json({ error: "Internal server error" });
     }
 });
