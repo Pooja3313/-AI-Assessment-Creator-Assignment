@@ -1,4 +1,7 @@
-import "dotenv/config";
+if (process.env.NODE_ENV !== "production") {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require("dotenv/config");
+}
 import http from "http";
 import express from "express";
 import cors from "cors";
