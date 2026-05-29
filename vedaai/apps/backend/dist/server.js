@@ -15,7 +15,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const assignments_1 = __importDefault(require("./routes/assignments"));
 const socket_1 = require("./socket");
 const app = (0, express_1.default)();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 8000;
 app.use((0, cors_1.default)({
     origin: process.env.FRONTEND_URL || "http://localhost:3000",
     credentials: true,

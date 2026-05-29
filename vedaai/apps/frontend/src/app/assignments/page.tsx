@@ -16,7 +16,7 @@ import { AssignmentCard } from "@/components/AssignmentCard";
 import { useToast } from "@/components/ui/use-toast";
 import type { Assignment } from "@vedaai/types";
 
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
 export default function AssignmentsPage() {
   const [assignments, setAssignments] = useState<Assignment[]>([]);

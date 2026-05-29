@@ -105,7 +105,7 @@ vedaai/
 
 **apps/backend/.env:**
 ```
-PORT=4000
+PORT=8000
 MONGODB_URL=mongodb://localhost:27017/vedaai
 REDIS_URL=redis://127.0.0.1:6379
 GROQ_API_KEY=gsk_...
@@ -114,7 +114,7 @@ FRONTEND_URL=http://localhost:3000
 
 **apps/frontend/.env.local:**
 ```
-NEXT_PUBLIC_BACKEND_URL=http://localhost:4000
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
 ```
 
 ## 📦 Deployment (Railway)
@@ -132,7 +132,7 @@ npm run build
 
 ```
 apps/backend/src/
-  server.ts          → Express server (port 4000)
+  server.ts          → Express server (port 8000)
   socket.ts           → WebSocket init + event emitter
   routes/assignments.ts  → GET/POST/DELETE endpoints
   models/Assignment.ts   → MongoDB schema

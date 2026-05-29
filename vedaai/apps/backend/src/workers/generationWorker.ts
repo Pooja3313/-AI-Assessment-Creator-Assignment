@@ -122,7 +122,7 @@ async function callGroq(userPrompt: string, correction = false): Promise<string>
       { role: "user", content: message }
     ],
     temperature: 0.7,
-    max_tokens: 4000,
+    max_tokens: 8000,
   });
 
   return response.choices[0].message.content?.trim() ?? "";

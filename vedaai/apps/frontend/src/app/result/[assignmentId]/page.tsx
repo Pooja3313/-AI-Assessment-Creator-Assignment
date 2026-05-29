@@ -12,7 +12,7 @@ import { QuestionPaper } from "@/components/QuestionPaper";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
 export default function ResultPage() {
   const params = useParams();

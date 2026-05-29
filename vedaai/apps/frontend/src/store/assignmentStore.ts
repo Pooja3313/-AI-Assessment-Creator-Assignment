@@ -2,7 +2,7 @@ import { create } from "zustand";
 import type { Assignment, AssignmentInput } from "@vedaai/types";
 
 const API_URL =
-  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
 export type StoreStatus =
   | "idle"
