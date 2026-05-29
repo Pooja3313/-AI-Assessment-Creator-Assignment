@@ -21,6 +21,11 @@ app.use((0, cors_1.default)({
     credentials: true,
 }));
 app.use(express_1.default.json({ limit: "10mb" }));
+// ROOT ROUTE
+app.get("/", (_req, res) => {
+    res.send("Backend Running Successfully");
+});
+// HEALTH ROUTE
 app.get("/health", (_req, res) => {
     res.json({ status: "ok" });
 });
@@ -32,8 +37,9 @@ async function start() {
     const mongoUri = process.env.MONGODB_URL;
     await mongoose_1.default.connect(mongoUri);
     console.log("Connected to MongoDB");
-    httpServer.listen(PORT, () => {
-        console.log(`Server running on http://localhost:${PORT}`);
+    // IMPORTANT FOR RAILWAY
+    httpServer.listen(Number(PORT), "0.0.0.0", () => {
+        console.log(`Server running on port ${PORT}`);
     });
 }
 start().catch((err) => {
