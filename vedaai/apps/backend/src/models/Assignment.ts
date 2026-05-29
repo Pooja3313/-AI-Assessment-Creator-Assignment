@@ -1,5 +1,5 @@
 ﻿import mongoose, { Schema, Document } from "mongoose";
-import type { Assignment, AssignmentInput, AssignmentStatus } from "@vedaai/types";
+import type { Assignment, AssignmentInput, AssignmentStatus } from "../types";
 
 export interface AssignmentDocument extends Document {
   input: AssignmentInput;

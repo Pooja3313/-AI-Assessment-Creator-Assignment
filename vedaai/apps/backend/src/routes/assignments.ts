@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import type { AssignmentInput, QuestionType } from "@vedaai/types";
+import type { AssignmentInput, QuestionType } from "../types";
 import { AssignmentModel, toAssignmentJSON } from "../models/Assignment";
 import { assignmentQueue } from "../queues/assignmentQueue";
 import { getCachedAssignment, setCachedAssignment } from "../lib/redis";

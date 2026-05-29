@@ -3,7 +3,7 @@ import { Server } from "socket.io";
 import { createAdapter } from "@socket.io/redis-adapter";
 import { Emitter } from "@socket.io/redis-emitter";
 import Redis from "ioredis";
-import type { WebSocketEvent } from "@vedaai/types";
+import type { WebSocketEvent } from "./types";
 
 let io: Server | null = null;
 let emitter: Emitter | null = null;

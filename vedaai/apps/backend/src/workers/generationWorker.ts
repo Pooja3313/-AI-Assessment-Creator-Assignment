@@ -11,7 +11,7 @@ import type {
   Question,
   QuestionType,
   Section,
-} from "@vedaai/types";
+} from "../types";
 import { AssignmentModel, toAssignmentJSON } from "../models/Assignment";
 import type { AssignmentJobData } from "../queues/assignmentQueue";
 import { setCachedAssignment } from "../lib/redis";
