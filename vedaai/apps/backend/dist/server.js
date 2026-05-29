@@ -4,7 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.io = void 0;
-require("dotenv/config");
+if (process.env.NODE_ENV !== "production") {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    require("dotenv/config");
+}
 const http_1 = __importDefault(require("http"));
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
@@ -26,7 +29,7 @@ const httpServer = http_1.default.createServer(app);
 const io = (0, socket_1.initSocket)(httpServer);
 exports.io = io;
 async function start() {
-    const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017/vedaai";
+    const mongoUri = process.env.MONGODB_URI;
     await mongoose_1.default.connect(mongoUri);
     console.log("Connected to MongoDB");
     httpServer.listen(PORT, () => {
