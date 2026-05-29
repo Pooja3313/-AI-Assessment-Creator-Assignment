@@ -106,7 +106,7 @@ vedaai/
 **apps/backend/.env:**
 ```
 PORT=4000
-MONGODB_URI=mongodb://localhost:27017/vedaai
+MONGODB_URL=mongodb://localhost:27017/vedaai
 REDIS_URL=redis://127.0.0.1:6379
 GROQ_API_KEY=gsk_...
 FRONTEND_URL=http://localhost:3000

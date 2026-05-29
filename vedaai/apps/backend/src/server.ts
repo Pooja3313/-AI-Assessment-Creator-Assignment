@@ -31,7 +31,7 @@ const io = initSocket(httpServer);
 
 export { io };
 async function start() {
-  const mongoUri = process.env.MONGODB_URI!;
+  const mongoUri = process.env.MONGODB_URL!;
 
   await mongoose.connect(mongoUri);
   console.log("Connected to MongoDB");

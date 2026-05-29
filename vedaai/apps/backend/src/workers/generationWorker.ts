@@ -350,8 +350,7 @@ const connection = {
 };
 
 async function startWorker() {
-  const mongoUri =
-    process.env.MONGODB_URI || "mongodb://localhost:27017/vedaai";
+ const mongoUri = process.env.MONGODB_URL!;
   await mongoose.connect(mongoUri);
   console.log("Worker connected to MongoDB");
 

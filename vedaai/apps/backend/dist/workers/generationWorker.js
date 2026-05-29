@@ -274,7 +274,7 @@ const connection = {
     port: Number(process.env.REDIS_PORT || 6379),
 };
 async function startWorker() {
-    const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017/vedaai";
+    const mongoUri = process.env.MONGODB_URL;
     await mongoose_1.default.connect(mongoUri);
     console.log("Worker connected to MongoDB");
     (0, socket_1.initWorkerEmitter)();
