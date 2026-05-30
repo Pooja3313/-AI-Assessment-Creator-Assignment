@@ -40,15 +40,16 @@ const io = initSocket(httpServer);
 export { io };
 
 async function start() {
-  const mongoUri = process.env.MONGODB_URL!;
-
-  await mongoose.connect(mongoUri);
-  console.log("Connected to MongoDB");
 
   // IMPORTANT FOR RAILWAY
   httpServer.listen(Number(PORT), "0.0.0.0", () => {
     console.log(`Server running on port ${PORT}`);
   });
+
+  const mongoUri = process.env.MONGODB_URL!;
+
+  await mongoose.connect(mongoUri);
+  console.log("Connected to MongoDB");
 }
 
 start().catch((err) => {
