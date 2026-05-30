@@ -344,17 +344,10 @@ async function processJob(assignmentId: string): Promise<void> {
   });
 }
 
-// const connection = {
-//   host: process.env.REDIS_HOST || "127.0.0.1",
-//   port: Number(process.env.REDIS_PORT || 6379),
-// };
-const connection = process.env.REDIS_URL
-  ? { url: process.env.REDIS_URL, maxRetriesPerRequest: null }
-  : {
-      host: process.env.REDIS_HOST || "127.0.0.1",
-      port: Number(process.env.REDIS_PORT || 6379),
-    };
-
+const connection = {
+  host: process.env.REDIS_HOST || "127.0.0.1",
+  port: Number(process.env.REDIS_PORT || 6379),
+};
 
 async function startWorker() {
  const mongoUri = process.env.MONGODB_URL!;
