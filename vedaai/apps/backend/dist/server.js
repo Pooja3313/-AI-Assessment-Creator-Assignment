@@ -31,13 +31,14 @@ app.get("/health", (_req, res) => {
 });
 app.use("/api/assignments", assignments_1.default);
 const httpServer = http_1.default.createServer(app);
-const io = (0, socket_1.initSocket)(httpServer);
-exports.io = io;
+let io;
 async function start() {
+    console.log("MONGODB_URL:", process.env.MONGODB_URL);
+    console.log("REDIS_URL:", process.env.REDIS_URL);
     const mongoUri = process.env.MONGODB_URL;
     await mongoose_1.default.connect(mongoUri);
     console.log("Connected to MongoDB");
-    // IMPORTANT FOR RAILWAY
+    exports.io = io = (0, socket_1.initSocket)(httpServer);
     httpServer.listen(Number(PORT), "0.0.0.0", () => {
         console.log(`Server running on port ${PORT}`);
     });

@@ -35,17 +35,24 @@ app.get("/health", (_req, res) => {
 app.use("/api/assignments", assignmentsRouter);
 
 const httpServer = http.createServer(app);
-const io = initSocket(httpServer);
 
+
+
+let io: any;
 export { io };
 
 async function start() {
-  const mongoUri = process.env.MONGODB_URL!;
+ 
+  console.log("MONGODB_URL:", process.env.MONGODB_URL);
+  console.log("REDIS_URL:", process.env.REDIS_URL);
 
+  const mongoUri = process.env.MONGODB_URL!;
   await mongoose.connect(mongoUri);
   console.log("Connected to MongoDB");
 
-  // IMPORTANT FOR RAILWAY
+
+  io = initSocket(httpServer);
+
   httpServer.listen(Number(PORT), "0.0.0.0", () => {
     console.log(`Server running on port ${PORT}`);
   });
