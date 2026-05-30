@@ -272,6 +272,8 @@ async function processJob(assignmentId) {
 const connection = {
     host: process.env.REDIS_HOST || "127.0.0.1",
     port: Number(process.env.REDIS_PORT || 6379),
+    username: process.env.REDIS_USERNAME || "default",
+    password: process.env.REDIS_PASSWORD || undefined,
 };
 async function startWorker() {
     const mongoUri = process.env.MONGODB_URL;
