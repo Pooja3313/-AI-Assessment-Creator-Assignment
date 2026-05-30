@@ -2,10 +2,10 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "npm install && npm run build:types && npm run build:backend"
+    "buildCommand": "npm install && npm install typescript --save-dev && npm run build:types && npm run build:backend"
   },
   "deploy": {
-    "startCommand": "node apps/backend/dist/server.js",
+    "startCommand": "node apps/backend/dist/server.js & node apps/backend/dist/workers/generationWorker.js",
     "healthcheckPath": "/health",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
