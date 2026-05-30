@@ -4,13 +4,10 @@ let redisClient: Redis | null = null;
 
 export function getRedis(): Redis {
   if (!redisClient) {
-    redisClient = new Redis({
-      host: "127.0.0.1",
-      port: 6379,
+    redisClient = new Redis(process.env.REDIS_URL || "redis://127.0.0.1:6379", {
       maxRetriesPerRequest: null,
       lazyConnect: true,
     });
-
     redisClient.on("error", (err) => console.log("Redis error:", err));
   }
   return redisClient;

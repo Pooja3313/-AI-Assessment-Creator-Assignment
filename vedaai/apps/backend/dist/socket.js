@@ -15,17 +15,6 @@ const ioredis_1 = __importDefault(require("ioredis"));
 let io = null;
 exports.io = io;
 let emitter = null;
-function getRedisOptions() {
-    if (process.env.REDIS_URL) {
-        return process.env.REDIS_URL;
-    }
-    return {
-        host: process.env.REDIS_HOST || "127.0.0.1",
-        port: Number(process.env.REDIS_PORT || 6379),
-        maxRetriesPerRequest: null,
-        lazyConnect: true,
-    };
-}
 function initSocket(httpServer) {
     exports.io = io = new socket_io_1.Server(httpServer, {
         cors: {
@@ -34,8 +23,7 @@ function initSocket(httpServer) {
             credentials: true,
         },
     });
-    const opts = getRedisOptions();
-    const pubClient = new ioredis_1.default(opts);
+    const pubClient = new ioredis_1.default(process.env.REDIS_URL || "redis://127.0.0.1:6379");
     pubClient.on("error", (err) => console.log("Redis error:", err));
     const subClient = pubClient.duplicate();
     subClient.on("error", (err) => console.log("Redis error:", err));
@@ -48,8 +36,7 @@ function initSocket(httpServer) {
     return io;
 }
 function initWorkerEmitter() {
-    const opts = getRedisOptions();
-    const redisClient = new ioredis_1.default(opts);
+    const redisClient = new ioredis_1.default(process.env.REDIS_URL || "redis://127.0.0.1:6379");
     redisClient.on("error", (err) => console.log("Redis error:", err));
     emitter = new redis_emitter_1.Emitter(redisClient);
     return emitter;

@@ -10,9 +10,7 @@ const ioredis_1 = __importDefault(require("ioredis"));
 let redisClient = null;
 function getRedis() {
     if (!redisClient) {
-        redisClient = new ioredis_1.default({
-            host: "127.0.0.1",
-            port: 6379,
+        redisClient = new ioredis_1.default(process.env.REDIS_URL || "redis://127.0.0.1:6379", {
             maxRetriesPerRequest: null,
             lazyConnect: true,
         });

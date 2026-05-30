@@ -8,18 +8,6 @@ import type { WebSocketEvent } from "./types";
 let io: Server | null = null;
 let emitter: Emitter | null = null;
 
-function getRedisOptions(): string | object {
-  if (process.env.REDIS_URL) {
-    return process.env.REDIS_URL;
-  }
-  return {
-    host: process.env.REDIS_HOST || "127.0.0.1",
-    port: Number(process.env.REDIS_PORT || 6379),
-    maxRetriesPerRequest: null,
-    lazyConnect: true,
-  };
-}
-
 
 export function initSocket(httpServer: HttpServer): Server {
   io = new Server(httpServer, {
@@ -30,8 +18,7 @@ export function initSocket(httpServer: HttpServer): Server {
 },
   });
 
-  const opts = getRedisOptions();
-  const pubClient = new Redis(opts as any);
+ const pubClient = new Redis(process.env.REDIS_URL || "redis://127.0.0.1:6379");
   pubClient.on("error", (err) => console.log("Redis error:", err));
 
   const subClient = pubClient.duplicate();
@@ -49,8 +36,7 @@ export function initSocket(httpServer: HttpServer): Server {
 }
 
 export function initWorkerEmitter(): Emitter {
-  const opts = getRedisOptions();
-  const redisClient = new Redis(opts as any);
+const redisClient = new Redis(process.env.REDIS_URL || "redis://127.0.0.1:6379");
   redisClient.on("error", (err) => console.log("Redis error:", err));
   emitter = new Emitter(redisClient);
   return emitter;
